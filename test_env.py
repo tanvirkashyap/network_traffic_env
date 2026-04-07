@@ -1,5 +1,8 @@
-import NetworkTrafficEnvironment, NetworkAction from server.environment
-env = NetworkTrafficEnvironment()
+import numpy as np
+from server.environment import NetworkEnvironment
+from models import NetworkAction
+
+env = NetworkEnvironment()
 obs = env.reset()
 
 while not obs.done:
