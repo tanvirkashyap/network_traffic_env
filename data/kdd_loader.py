@@ -21,39 +21,34 @@ class KDDLoader(BaseLoader):
         data = fetch_kddcup99()
         self.df = pd.DataFrame(data.data, columns=data.feature_names)
         self.df['label'] = data.target
-    
-    # decode all columns from bytes to strings
-       for col in self.df.columns:
+
+        # ✅ FIX: safe decoding
+        for col in self.df.columns:
             if self.df[col].dtype == object:
                 self.df[col] = self.df[col].apply(
-            lambda x: x.decode('utf-8') if isinstance(x, bytes) else x
-        )
-    
-    # convert numeric columns to numbers
+                    lambda x: x.decode('utf-8') if isinstance(x, bytes) else x
+                )
+
+        # convert numeric columns
         for col in self.df.columns:
             try:
                 self.df[col] = pd.to_numeric(self.df[col])
             except:
                 pass
-    
-    # label encode categorical columns
+
+        # label encode categorical
         le = LabelEncoder()
         for col in ['protocol_type', 'service', 'flag']:
             self.df[col] = le.fit_transform(self.df[col])
-    
-    # add is_attack column
+
+        # add attack label
         self.df['is_attack'] = self.df['label'].apply(
             lambda x: 0 if x == 'normal.' else 1
-    )
-        # keep only rows where label is one of these values
-        
-       # Drop duplicates
+        )
+
+        # clean data
         self.df = self.df.drop_duplicates()
-
-# Handle missing values (just in case)
         self.df = self.df.dropna()
-
-# Reset index
         self.df = self.df.reset_index(drop=True)
     
     def get_episode(self, task_name: str, episode_length: int) -> pd.DataFrame:
