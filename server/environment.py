@@ -58,7 +58,7 @@ class NetworkEnvironment:
 
         # next step
         self.current_step += 1
-        done = self.current_step >= len(self.episode_data)
+        done = self.current_step == len(self.episode_data) - 1
 
         if not done:
             next_row = self.episode_data.iloc[self.current_step]
