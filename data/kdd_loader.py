@@ -23,8 +23,11 @@ class KDDLoader(BaseLoader):
         self.df['label'] = data.target
     
     # decode all columns from bytes to strings
-        for col in self.df.select_dtypes(include=['object']).columns:
-            self.df[col] = self.df[col].str.decode('utf-8')
+       for col in self.df.columns:
+            if self.df[col].dtype == object:
+                self.df[col] = self.df[col].apply(
+            lambda x: x.decode('utf-8') if isinstance(x, bytes) else x
+        )
     
     # convert numeric columns to numbers
         for col in self.df.columns:
