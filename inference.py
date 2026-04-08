@@ -7,10 +7,7 @@ from tasks.task1_obvious import grader as grader1
 from tasks.task2_subtle import grader as grader2
 from tasks.task3_mixed import grader as grader3
 
-# =========================
-# ENV VARIABLES
-# =========================
-API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:7860")
+API_BASE_URL = os.getenv("API_BASE_URL", "https://tanananana-network-traffic-env.hf.space")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
 
 openai_client = OpenAI()
@@ -22,9 +19,6 @@ TASK_GRADERS = {
     "mixed": grader3
 }
 
-# =========================
-# LLM POLICY
-# =========================
 def choose_action(obs):
     prompt = f"""
 You are a cybersecurity analyst monitoring network traffic.
@@ -56,36 +50,31 @@ Respond ONLY with 0, 1, or 2.
     except:
         return 1  # fallback to flag, safest default
 
-# =========================
-# RUN ONE EPISODE
-# =========================
-def run_episode(task_name="obvious", max_steps=200):
+def run_episode(task_name="obvious", max_steps=100):
     obs = env.reset(task_name=task_name)
     history = []
+    
+    # MANDATORY FORMAT
+    print(f"[START] {task_name}")
+
     steps = 0
-
-    print(f"\nSTART — task: {task_name}")
-
     while not obs.done and steps < max_steps:
         action_id = choose_action(obs.__dict__)
         action = NetworkAction(action_id=action_id)
 
-        history.append({
-            "action": action_id,
-            "reward": obs.reward if obs.reward is not None else 0.0
-        })
-
+        
         obs = env.step(action)
+        
+       
+        print(f"[STEP] {steps}: action={action_id} reward={obs.reward}")
+
+        history.append({"action": action_id, "reward": obs.reward})
         steps += 1
 
-        print(f"  step {steps}: action={action_id} reward={obs.reward}")
-
-    print(f"END — {steps} steps")
+    
+    print(f"[END] {task_name}")
     return history
 
-# =========================
-# MAIN
-# =========================
 if __name__ == "__main__":
     print("Running inference with LLM agent...\n")
 
