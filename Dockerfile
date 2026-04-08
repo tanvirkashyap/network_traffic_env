@@ -24,4 +24,4 @@ EXPOSE 7860
 # DOUBLE CHECK THIS: 
 # If app.py is in root, use "app:app". 
 # If app.py is in /server, use "server.app:app"
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "7860"]

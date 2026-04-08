@@ -1,7 +1,7 @@
 name: "network-traffic-env"
 version: "1.0.0"
 description: "RL environment for adaptive network intrusion detection using KDD Cup 99 dataset"
-entry_point: "app:app"  # Ensure this matches your file structure
+entry_point: "server.app:app"  # Ensure this matches your file structure
 tags:
   - "openenv"
   - "cybersecurity"
