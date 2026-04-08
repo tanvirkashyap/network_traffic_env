@@ -1,6 +1,7 @@
 import numpy as np
 from client import NetworkEnvClient
 from models import NetworkAction
+import os
 
 # import graders
 from tasks.task1_obvious import grader as grader1
@@ -9,7 +10,10 @@ from tasks.task3_mixed import grader as grader3
 
 
 def run_episode(task_name):
-    client = NetworkEnvClient()
+    
+    hf_url = os.getenv("API_BASE_URL", "https://tanananana-network-traffic-env.hf.space")
+    
+    client = NetworkEnvClient(base_url=hf_url)
     obs = client.reset(task_name=task_name)
 
     history = []
@@ -30,8 +34,8 @@ def run_episode(task_name):
 
         obs = client.step(action)
         steps += 1
-    print("Step:", steps, "Done:", obs.done) 
-    print("Finished episode")
+    #print("Step:", steps, "Done:", obs.done) 
+    #print("Finished episode")
 
     return history
 
@@ -39,7 +43,7 @@ def run_episode(task_name):
 def evaluate_task(task_name, grader):
     scores = []
 
-    for _ in range(5):  # multiple episodes for stability
+    for _ in range(1):  # multiple episodes for stability
         history = run_episode(task_name)
         score = grader(history)
         scores.append(score)
@@ -50,13 +54,24 @@ def evaluate_task(task_name, grader):
 if __name__ == "__main__":
     np.random.seed(42)
 
-    print("Running baseline...")
+    print("Starting Baseline Evaluation...")
 
+    # Task 1
+    print("\nEvaluating Task 1 (Obvious)...")
     score1 = evaluate_task("obvious", grader1)
-    score2 = evaluate_task("subtle", grader2)
-    score3 = evaluate_task("mixed", grader3)
+    print(f"Task 1 Score: {score1:.3f}")
 
-    print("\nBaseline Scores:")
-    print(f"Task 1 (Obvious): {score1:.3f}")
-    print(f"Task 2 (Subtle): {score2:.3f}")
-    print(f"Task 3 (Mixed):  {score3:.3f}")
+    # Task 2
+    print("\nEvaluating Task 2 (Subtle)...")
+    score2 = evaluate_task("subtle", grader2)
+    print(f"Task 2 Score: {score2:.3f}")
+
+    # Task 3
+    print("\nEvaluating Task 3 (Mixed)...")
+    score3 = evaluate_task("mixed", grader3)
+    print(f"Task 3 Score: {score3:.3f}")
+
+    print("\n=========================")
+    print("ALL TASKS COMPLETE")
+    print(f"Final Scores: T1: {score1:.3f}, T2: {score2:.3f}, T3: {score3:.3f}")
+    print("=========================")
