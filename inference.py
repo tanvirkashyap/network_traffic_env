@@ -1,66 +1,56 @@
 import os
 import json
-from openai import OpenAI
-from client import NetworkEnvClient
-from models import NetworkAction
+
 from tasks.task1_obvious import grader as grader1
 from tasks.task2_subtle import grader as grader2
 from tasks.task3_mixed import grader as grader3
-# MANDATORY: judges provide these. 
-# For your local testing, we point to Hugging Face's Brain
-LLM_API_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co")
-MODEL_NAME = os.getenv("MODEL_NAME", "meta-llama/Llama-3.1-8B-Instruct")
+
+import os
+from openai import OpenAI
+from client import NetworkEnvClient
+from models import NetworkAction
+
+# 1. MANDATORY: The LLM Brain (pointing to Hugging Face Cloud)
+LLM_API_URL = "https://api-inference.huggingface.co/v1/"
 HF_TOKEN = os.getenv("HF_TOKEN")
 
-# Your Environment URL
+# Use the ID from your sample code
+MODEL_NAME = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+
+# 2. Your Cybersecurity Environment
 ENV_URL = os.getenv("ENV_URL", "https://tanananana-network-traffic-env.hf.space")
 
+# Initialize OpenAI Client (This satisfies the hackathon requirement)
 openai_client = OpenAI(
-    base_url=LLM_API_URL, 
-    api_key=HF_TOKEN 
+    base_url=LLM_API_URL,
+    api_key=HF_TOKEN
 )
+
+# Initialize Environment
 env = NetworkEnvClient(base_url=ENV_URL)
 
-
-TASK_GRADERS = {
-    "obvious": grader1,
-    "subtle": grader2,
-    "mixed": grader3
-}
-
 def choose_action(obs):
-    prompt = f"""
-You are a cybersecurity analyst monitoring network traffic.
-Decide what to do with this connection:
+    # Simplified prompt for Llama 3.1
+    prompt = f"Categorize this network traffic. Reply ONLY with 0 (Allow), 1 (Flag), or 2 (Block). Stats: duration={obs['duration']}, bytes={obs['src_bytes']}. Action:"
 
-- Duration: {obs['duration']}s
-- Source bytes: {obs['src_bytes']}
-- Destination bytes: {obs['dst_bytes']}
-- Wrong fragments: {obs['wrong_fragment']}
-- Failed logins: {obs['num_failed_logins']}
-- Recent attacks in window: {obs['window_attack_count']}
-- Similar connections in window: {obs['window_same_src_count']}
-
-Actions:
-0 = allow (safe connection)
-1 = flag (suspicious, needs review)
-2 = block (malicious, block immediately)
-
-Respond ONLY with 0, 1, or 2.
-"""
-    response = openai_client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0
-    )
-    action_text = response.choices[0].message.content.strip()
-    
-    # Look for the FIRST digit (0, 1, or 2) in the response
-    for char in action_text:
-        if char in ["0", "1", "2"]:
-            return int(char)
-            
-    return 1 # fallback
+    try:
+        response = openai_client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=5,
+            temperature=0
+        )
+        
+        content = response.choices[0].message.content.strip()
+        
+        # Safe extraction: find the first digit
+        for char in content:
+            if char in ['0', '1', '2']:
+                return int(char)
+        return 1
+    except Exception as e:
+        print(f"LLM Error: {e}")
+        return 1# fallback
 
 def run_episode(task_name="obvious", max_steps=100):
     obs = env.reset(task_name=task_name)
