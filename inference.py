@@ -9,7 +9,7 @@ from tasks.task3_mixed import grader as grader3
 # MANDATORY: judges provide these. 
 # For your local testing, we point to Hugging Face's Brain
 LLM_API_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co")
-MODEL_NAME = os.getenv("MODEL_NAME", "meta-llama/Meta-Llama-3-8B-Instruct")
+MODEL_NAME = os.getenv("MODEL_NAME", "meta-llama/Llama-3.1-8B-Instruct")
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 # Your Environment URL

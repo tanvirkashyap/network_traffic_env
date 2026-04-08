@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from server.environment import NetworkEnvironment
 from models import NetworkAction
 from pydantic import BaseModel
+import uvicorn
 
 # request models
 class ActionRequest(BaseModel):
@@ -35,3 +36,10 @@ def step(action: ActionRequest):
 @app.get("/state")
 def state():
     return env.state().dict()
+
+def main():
+    """Main entry point for the OpenEnv validator."""
+    uvicorn.run(app, host="0.0.0.0", port=7860)
+
+if __name__ == "__main__":
+    main()
