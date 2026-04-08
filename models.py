@@ -1,13 +1,13 @@
 # Action, Observation, State
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any
+from pydantic import BaseModel
 
-@dataclass
-class NetworkAction:
-    action_id : int
+class NetworkAction(BaseModel):
+    action_id: int
     metadata: Optional[Dict[str, Any]] = None
-@dataclass
-class NetworkObservation:
+
+class NetworkObservation(BaseModel):
     # current event (from KDD row)
     duration: int
     protocol_type: int
@@ -40,7 +40,7 @@ class NetworkObservation:
         if not self.legal_actions:
             self.legal_actions = [0, 1, 2]
 @dataclass
-class NetworkState:
+class NetworkState(BaseModel):
     episode_id: str
     step_count: int
     total_events: int
