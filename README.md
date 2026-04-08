@@ -1,14 +1,12 @@
 ---
-title: Network Traffic Security Environment
-emoji: 🔒
-colorFrom: red
-colorTo: blue
+title: Network Traffic Env
+emoji: 🛡️
+colorFrom: blue
+colorTo: red
 sdk: docker
 pinned: false
 tags:
-  - openenv
-  - reinforcement-learning
-  - cybersecurity
+- openenv
 ---
 # Network Traffic Security Environment (OpenEnv)
 
