@@ -24,13 +24,13 @@ def run_episode(task_name):
         action = NetworkAction(action_id=action_id)
 
         history.append({
-    "action": action_id,
-    "reward": obs.reward if obs.reward is not None else 0.0
-})
+            "action": action_id,
+            "reward": obs.reward if obs.reward is not None else 0.0
+        })
 
         obs = client.step(action)
         steps += 1
-
+    print("Step:", steps, "Done:", obs.done) 
     print("Finished episode")
 
     return history

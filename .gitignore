@@ -16,4 +16,4 @@ __pycache__/
 ~/scikit_learn_data/
 
 # Test outputs
-*.log
+*.log*.swp
