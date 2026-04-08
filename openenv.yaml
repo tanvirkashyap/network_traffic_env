@@ -1,6 +1,35 @@
-name: network-traffic-env
+name: "network-traffic-env"
 version: "1.0.0"
-description: RL environment for adaptive network intrusion detection using KDD Cup 99 dataset
-entry_point: server.app:app
+description: "RL environment for adaptive network intrusion detection using KDD Cup 99 dataset"
+entry_point: "app:app"  # Ensure this matches your file structure
 tags:
-  - openenv
+  - "openenv"
+  - "cybersecurity"
+
+# This section is critical for the "3+ tasks with graders" requirement
+tasks:
+  - id: "obvious"
+    name: "Standard Attack Detection"
+    description: "Detect clear patterns like Nmap scans and Neptune DoS attacks."
+    difficulty: "easy"
+  - id: "subtle"
+    name: "Subtle Intrusion Detection"
+    description: "Detect low-and-slow attacks and buffer overflows."
+    difficulty: "medium"
+  - id: "mixed"
+    name: "Mixed Traffic Analysis"
+    description: "A high-noise environment with both subtle and obvious attacks."
+    difficulty: "hard"
+
+# Defining spaces helps the "Agentic Evaluation" (Phase 2) understand your model
+action_space:
+  type: "discrete"
+  description: "Decision for network connection"
+  values:
+    0: "allow"
+    1: "flag"
+    2: "block"
+
+observation_space:
+  type: "dict"
+  description: "Network connection metrics and windowed statistics"
