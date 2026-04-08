@@ -23,15 +23,15 @@ env = NetworkEnvironment()
 def reset(request: ResetRequest):
     env.task_name = request.task_name
     obs = env.reset()
-    return obs.__dict__
+    return obs.dict()
 
 
 @app.post("/step")
 def step(action: ActionRequest):
     obs = env.step(NetworkAction(action_id=action.action_id))
-    return obs.__dict__
+    return obs.dict()
 
 
 @app.get("/state")
 def state():
-    return env.state().__dict__
+    return env.state().dict()
