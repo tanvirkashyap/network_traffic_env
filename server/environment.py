@@ -70,7 +70,7 @@ class NetworkEnvironment:
     
         return self._build_observation(next_row, reward=reward, done=done)
 
-    def _calculate_reward(self, action_id: int, is_attack: int) -> float
+    def _calculate_reward(self, action_id: int, is_attack: int) -> float:
     
         if is_attack == 1:  # MALICIOUS CONNECTION
             if action_id == 2:    # Block (Correct)
