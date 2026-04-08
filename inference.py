@@ -7,10 +7,14 @@ from tasks.task1_obvious import grader as grader1
 from tasks.task2_subtle import grader as grader2
 from tasks.task3_mixed import grader as grader3
 
+HF_TOKEN = os.getenv("HF_TOKEN")
 API_BASE_URL = os.getenv("API_BASE_URL", "https://tanananana-network-traffic-env.hf.space")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
 
-openai_client = OpenAI()
+openai_client = OpenAI(
+    base_url="https://api-inference.huggingface.co/v1/", 
+    api_key=HF_TOKEN  # The client will now use the variable from the system
+)
 env = NetworkEnvClient(base_url=API_BASE_URL)
 
 TASK_GRADERS = {
