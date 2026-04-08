@@ -1,2 +1,4 @@
-# metadata
-#
+name: network-traffic-env
+version: 0.1.0
+description: RL environment for adaptive network intrusion detection
+entrypoint: server.app:app

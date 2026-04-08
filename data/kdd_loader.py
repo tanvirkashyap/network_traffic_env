@@ -2,7 +2,7 @@ from sklearn.datasets import fetch_kddcup99
 from sklearn.preprocessing import LabelEncoder
 import pandas as pd
 import numpy as np
-from typing import Dict, Tuple
+from typing import Dict
 from data.base_loader import BaseLoader
 
 TASK_ATTACKS = {

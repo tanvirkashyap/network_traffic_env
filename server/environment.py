@@ -1,3 +1,5 @@
+from turtle import done
+from typing import Optional
 import numpy as np
 import pandas as pd
 
@@ -12,7 +14,7 @@ class NetworkEnvironment:
         self.episode_length = episode_length
         self.window_size = window_size
 
-        self.episode_data = None
+        self.episode_data: pd.DataFrame = pd.DataFrame()
         self.current_step = 0
         self.window = []
         self.episode_id = None
@@ -21,7 +23,9 @@ class NetworkEnvironment:
         self.false_positives = 0
         self.missed_attacks = 0
 
-    def reset(self):
+    def reset(self, task_name=None):
+        if task_name:
+            self.task_name = task_name
         self.episode_data = self.loader.get_episode(self.task_name, self.episode_length)
         self.current_step = 0
         self.window = []
@@ -30,50 +34,48 @@ class NetworkEnvironment:
         self.correct_blocks = 0
         self.false_positives = 0
         self.missed_attacks = 0
+        
 
         first_row = self.episode_data.iloc[self.current_step]
         return self._build_observation(first_row, reward=None, done=False)
 
-    def step(self, action):
+    def step(self, action: NetworkAction) -> NetworkObservation:
         row = self.episode_data.iloc[self.current_step]
-        is_attack = row['is_attack']
-
+        is_attack = int(row["is_attack"])
+    
         reward = self._calculate_reward(action.action_id, is_attack)
-
-        # metrics
-        if action.action_id == 1:
+    
+    # metrics tracking
+        if action.action_id == 2:      # block
             if is_attack:
                 self.correct_blocks += 1
             else:
                 self.false_positives += 1
-
-        elif action.action_id == 0:
+        elif action.action_id == 0:    # allow
             if is_attack:
                 self.missed_attacks += 1
-
-        # window
+    
+    # update window
         self.window.append(row)
         if len(self.window) > self.window_size:
             self.window.pop(0)
-
-        # next step
+    
         self.current_step += 1
-        done = self.current_step == len(self.episode_data) - 1
-
+        done = self.current_step >= len(self.episode_data)
+    
         if not done:
             next_row = self.episode_data.iloc[self.current_step]
         else:
             next_row = row
-
-        obs = self._build_observation(next_row, reward=reward, done=done)
-        return obs
+    
+        return self._build_observation(next_row, reward=reward, done=done)
 
     def _calculate_reward(self, action_id, is_attack):
-        if action_id == 1:
+        if action_id == 2:
             return 1.0 if is_attack else -0.5
         elif action_id == 0:
             return -1.0 if is_attack else 0.3
-        elif action_id == 2:
+        elif action_id == 1:
             return 0.5 if is_attack else -0.1
         return 0.0
 
@@ -83,14 +85,22 @@ class NetworkEnvironment:
 
         df = pd.DataFrame(self.window)
 
-        return (
-            df['src_bytes'].mean(),
-            df['duration'].mean(),
-            len(df),
-            df['is_attack'].sum()
-        )
+        if len(df) == 0:
+            return 0.0, 0.0, 0, 0
 
-    def _build_observation(self, row, reward=None, done=False):
+        current_protocol = self.window[-1]['protocol_type']
+        same_src_count = len(df[df['protocol_type'] == current_protocol])
+
+
+
+        return (
+            float(df['src_bytes'].mean()),
+            float(df['duration'].mean()),
+            int(same_src_count),  
+            int(df['is_attack'].sum())
+)
+
+    def _build_observation(self, row: pd.Series, reward: Optional[float] = None, done: bool = False) -> NetworkObservation:
         avg_src_bytes, avg_duration, same_src_count, attack_count = self._get_window_stats()
 
         return NetworkObservation(
@@ -109,11 +119,12 @@ class NetworkEnvironment:
             window_avg_duration=float(avg_duration),
             window_same_src_count=int(same_src_count),
             window_attack_count=int(attack_count),
+            
 
-            done=done,
-            reward=reward,
-            step=self.current_step
-        )
+        done=bool(done),
+        reward=reward,
+        step=self.current_step
+    )
 
     def state(self):
         return NetworkState(

@@ -1,3 +1,5 @@
+from urllib import response
+
 import requests
 from typing import Optional
 
@@ -9,19 +11,15 @@ class NetworkEnvClient:
     def __init__(self, base_url: str = "http://localhost:8000"):
         self.base_url = base_url
 
-    # -------------------------
-    # RESET
-    # -------------------------
+    
     def reset(self, task_name="obvious"):
         response = requests.post(
         f"{self.base_url}/reset",
-        json={"task_name": task_name}   
+        json={"task_name": task_name}
     )
         response.raise_for_status()
-        return NetworkObservation(**response.json())
-    # -------------------------
-    # STEP
-    # -------------------------
+        return self._parse_observation(response.json())
+    
     def step(self, action: NetworkAction) -> NetworkObservation:
         response = requests.post(
         f"{self.base_url}/step",
@@ -42,7 +40,7 @@ class NetworkEnvClient:
     # -------------------------
     def _step_payload(self, action: NetworkAction):
         return {
-        "action_id": int(action.action_id)
+        "action_id": int(action.action_id)  # 🔥 important fix
     }
 
     # -------------------------
@@ -66,6 +64,7 @@ class NetworkEnvClient:
             window_same_src_count=data["window_same_src_count"],
             window_attack_count=data["window_attack_count"],
 
+            
             done=data["done"],
             reward=data.get("reward"),
             step=data["step"]

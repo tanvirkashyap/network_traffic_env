@@ -10,24 +10,28 @@ from tasks.task3_mixed import grader as grader3
 
 def run_episode(task_name):
     client = NetworkEnvClient()
-
-    # reset environment
     obs = client.reset(task_name=task_name)
 
     history = []
 
-    while not obs.done:
-        action_id = np.random.choice([0, 1, 2])
+    max_steps = 1000
+    steps = 0
 
-        # store step info for grading
+    while not obs.done and steps < max_steps:
+        print("Step:", obs.step, "Done:", obs.done)
+
+        action_id = np.random.choice([0, 1, 2])
+        action = NetworkAction(action_id=action_id)
+
         history.append({
     "action": action_id,
-    "reward": obs.reward,
-    "done": obs.done,
-    "is_attack": obs.window_attack_count > 0  # proxy until graders are built
+    "reward": obs.reward if obs.reward is not None else 0.0
 })
 
-        obs = client.step(NetworkAction(action_id=action_id))
+        obs = client.step(action)
+        steps += 1
+
+    print("Finished episode")
 
     return history
 

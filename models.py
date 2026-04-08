@@ -5,8 +5,7 @@ from typing import List, Optional, Dict, Any
 @dataclass
 class NetworkAction:
     action_id : int
-    metadata : Optional[Dict[str, Any]]
-
+    metadata: Optional[Dict[str, Any]] = None
 @dataclass
 class NetworkObservation:
     # current event (from KDD row)
@@ -27,10 +26,12 @@ class NetworkObservation:
     window_same_src_count: int
     window_attack_count: int
     
+    
     # episode control (the RL loop needs these)
     done: bool
     reward: Optional[float]
     step: int
+    
     
     # legal actions (always [0,1,2] but needs special handling)
     legal_actions: List[int] = field(default_factory=list)
