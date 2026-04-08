@@ -1,4 +1,15 @@
-<<<<<<< HEAD
+---
+title: Network Traffic Security Environment
+emoji: 🔒
+colorFrom: red
+colorTo: blue
+sdk: docker
+pinned: false
+tags:
+  - openenv
+  - reinforcement-learning
+  - cybersecurity
+---
 # Network Traffic Security Environment (OpenEnv)
 
 ## Overview
@@ -149,14 +160,3 @@ export OPENAI_API_KEY=your_key_here
 python inference.py
 ```
 =======
----
-title: Network Traffic Env
-emoji: 💻
-colorFrom: blue
-colorTo: yellow
-sdk: docker
-pinned: false
----
-
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
->>>>>>> cf2cd7b0ccb488fd136c965935510968d8f13134
