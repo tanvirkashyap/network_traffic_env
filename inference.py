@@ -6,16 +6,21 @@ from models import NetworkAction
 from tasks.task1_obvious import grader as grader1
 from tasks.task2_subtle import grader as grader2
 from tasks.task3_mixed import grader as grader3
-
+# MANDATORY: judges provide these. 
+# For your local testing, we point to Hugging Face's Brain
+LLM_API_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co")
+MODEL_NAME = os.getenv("MODEL_NAME", "meta-llama/Meta-Llama-3-8B-Instruct")
 HF_TOKEN = os.getenv("HF_TOKEN")
-API_BASE_URL = os.getenv("API_BASE_URL", "https://tanananana-network-traffic-env.hf.space")
-MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
+
+# Your Environment URL
+ENV_URL = os.getenv("ENV_URL", "https://tanananana-network-traffic-env.hf.space")
 
 openai_client = OpenAI(
-    base_url="https://api-inference.huggingface.co/v1/", 
-    api_key=HF_TOKEN  # The client will now use the variable from the system
+    base_url=LLM_API_URL, 
+    api_key=HF_TOKEN 
 )
-env = NetworkEnvClient(base_url=API_BASE_URL)
+env = NetworkEnvClient(base_url=ENV_URL)
+
 
 TASK_GRADERS = {
     "obvious": grader1,
@@ -63,7 +68,7 @@ def run_episode(task_name="obvious", max_steps=100):
 
     steps = 0
     while not obs.done and steps < max_steps:
-        action_id = choose_action(obs.__dict__)
+        action_id = choose_action(obs.model_dump())
         action = NetworkAction(action_id=action_id)
 
         
