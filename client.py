@@ -8,7 +8,7 @@ from models import NetworkAction, NetworkObservation
 
 
 class NetworkEnvClient:
-    def __init__(self, base_url: str = "http://localhost:7860"):
+    def __init__(self, base_url: str = "https://tanananana-network-traffic-env.hf.space"):
         self.base_url = base_url
 
     
