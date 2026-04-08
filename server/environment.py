@@ -70,14 +70,25 @@ class NetworkEnvironment:
     
         return self._build_observation(next_row, reward=reward, done=done)
 
-    def _calculate_reward(self, action_id, is_attack):
-        if action_id == 2:
-            return 1.0 if is_attack else -0.5
-        elif action_id == 0:
-            return -1.0 if is_attack else 0.3
-        elif action_id == 1:
-            return 0.5 if is_attack else -0.1
-        return 0.0
+    def _calculate_reward(self, action_id: int, is_attack: int) -> float
+    
+        if is_attack == 1:  # MALICIOUS CONNECTION
+            if action_id == 2:    # Block (Correct)
+                return 1.0
+            elif action_id == 1:  # Flag (Partial Progress - detected but not stopped)
+                return 0.6
+            else:                # Allow (Catastrophic failure)
+                return 0.0
+            
+        else:  # NORMAL CONNECTION
+            if action_id == 0:    # Allow (Correct)
+                return 0.8
+            elif action_id == 1:  # Flag (Small penalty - wasted analyst time)
+                return 0.4
+            else:                # Block (Destructive action - blocked a real user)
+                return 0.1
+
+        return 0.0  
 
     def _get_window_stats(self):
         if not self.window:
