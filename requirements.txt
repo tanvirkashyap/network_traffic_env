@@ -1,8 +1,8 @@
+fastapi
+uvicorn
+pydantic
+requests
 pandas
 numpy
 scikit-learn
-fastapi
-pydantic
-requests
-uvicorn
 openai
