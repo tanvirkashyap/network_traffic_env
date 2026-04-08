@@ -54,10 +54,13 @@ Respond ONLY with 0, 1, or 2.
         temperature=0
     )
     action_text = response.choices[0].message.content.strip()
-    try:
-        return int(action_text)
-    except:
-        return 1  # fallback to flag, safest default
+    
+    # Look for the FIRST digit (0, 1, or 2) in the response
+    for char in action_text:
+        if char in ["0", "1", "2"]:
+            return int(char)
+            
+    return 1 # fallback
 
 def run_episode(task_name="obvious", max_steps=100):
     obs = env.reset(task_name=task_name)
