@@ -131,7 +131,7 @@ Deployed on Hugging Face Spaces (Docker-based).
 
 ### Local Development
 ```bash
-git clone https://github.com/yourusername/network_traffic_env
+git clone https://github.com/tanvirkashyap/network_traffic_env
 cd network_traffic_env
 pip install -r requirements.txt
 uvicorn server.app:app --host 0.0.0.0 --port 7860
