@@ -23,10 +23,10 @@ env = NetworkEnvironment()
 
 
 @app.post("/reset")
-    def reset(request: ResetRequest):
-        env.task_name = request.task_name
-        obs = env.reset()
-        return {
+def reset(request: ResetRequest):
+    env.task_name = request.task_name
+    obs = env.reset()
+    return {
         "observation": obs.__dict__,
         "reward": None,
         "done": False,
@@ -34,9 +34,9 @@ env = NetworkEnvironment()
     }
 
 @app.post("/step")
-    def step(action: ActionRequest):
-        obs = env.step(NetworkAction(action_id=action.action_id))
-        return {
+def step(action: ActionRequest):
+    obs = env.step(NetworkAction(action_id=action.action_id))
+    return {
         "observation": obs.__dict__,
         "reward": obs.reward,
         "done": obs.done,
