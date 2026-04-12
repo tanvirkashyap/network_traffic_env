@@ -114,11 +114,10 @@ Run:
 
 python baseline.py
 
-Example output:
-
-Score (obvious): 0.52
-Score (subtle):  0.41
-Score (mixed):   0.28
+Output:
+  "obvious": 0.402,
+  "subtle": 0.0,
+  "mixed": 0.0
 ## Docker
 docker build -t network-env .
 docker run -p 7860:7860 network-env
