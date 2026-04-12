@@ -21,13 +21,17 @@ env = NetworkEnvironment()
 
 
 @app.post("/reset")
-def reset(request: ResetRequest):
+def reset(request: ResetRequest = None): # <--- Add '= None' here
+    # If the validator sends no body, we create a default ResetRequest
+    if request is None:
+        request = ResetRequest(task_name="obvious")
+        
     env.task_name = request.task_name
     obs = env.reset()
     
-    # MANDATORY OPENENV STRUCTURE
+    # Ensure you are returning the NESTED structure the validator wants
     return {
-        "observation": obs.model_dump(), # Use model_dump for Pydantic V2
+        "observation": obs.model_dump(),
         "reward": None,
         "done": False,
         "info": {}
@@ -35,15 +39,15 @@ def reset(request: ResetRequest):
 
 @app.post("/step")
 def step(action_req: ActionRequest):
-    # Process the action
+    # Process the action through your environment
     obs = env.step(NetworkAction(action_id=action_req.action_id))
     
-    # MANDATORY OPENENV STRUCTURE
+    # Return the EXACT nested structure required by OpenEnv
     return {
         "observation": obs.model_dump(),
         "reward": obs.reward,
         "done": obs.done,
-        "info": {"step": obs.step} # You can put extra data here
+        "info": {"step": obs.step}
     }
 
 
