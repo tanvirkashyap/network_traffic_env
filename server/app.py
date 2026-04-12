@@ -1,5 +1,3 @@
-from urllib import request
-
 from fastapi import FastAPI
 from server.environment import NetworkEnvironment
 from models import NetworkAction
@@ -26,21 +24,26 @@ env = NetworkEnvironment()
 def reset(request: ResetRequest):
     env.task_name = request.task_name
     obs = env.reset()
+    
+    # MANDATORY OPENENV STRUCTURE
     return {
-        "observation": obs.__dict__,
+        "observation": obs.model_dump(), # Use model_dump for Pydantic V2
         "reward": None,
         "done": False,
         "info": {}
     }
 
 @app.post("/step")
-def step(action: ActionRequest):
-    obs = env.step(NetworkAction(action_id=action.action_id))
+def step(action_req: ActionRequest):
+    # Process the action
+    obs = env.step(NetworkAction(action_id=action_req.action_id))
+    
+    # MANDATORY OPENENV STRUCTURE
     return {
-        "observation": obs.__dict__,
+        "observation": obs.model_dump(),
         "reward": obs.reward,
         "done": obs.done,
-        "info": {}
+        "info": {"step": obs.step} # You can put extra data here
     }
 
 

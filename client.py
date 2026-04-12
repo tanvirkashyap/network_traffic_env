@@ -28,44 +28,38 @@ class NetworkEnvClient:
         response.raise_for_status()
         return self._parse_observation(response.json())
 
-    # -------------------------
-    # STATE
-    # -------------------------
+  
     def state(self):
         response = requests.get(f"{self.base_url}/state")
         return response.json()
 
-    # -------------------------
-    # INTERNAL: ACTION → JSON
-    # -------------------------
     def _step_payload(self, action: NetworkAction):
         return {
-        "action_id": int(action.action_id)  # 🔥 important fix
+        "action_id": int(action.action_id)  
     }
 
-    # -------------------------
-    # INTERNAL: JSON → OBSERVATION
-    # -------------------------
     def _parse_observation(self, data) -> NetworkObservation:
+        obs_data = data["observation"]
+        
         return NetworkObservation(
-            duration=data["duration"],
-            protocol_type=data["protocol_type"],
-            service=data["service"],
-            flag=data["flag"],
-            src_bytes=data["src_bytes"],
-            dst_bytes=data["dst_bytes"],
-            wrong_fragment=data["wrong_fragment"],
-            urgent=data["urgent"],
-            num_failed_logins=data["num_failed_logins"],
-            hot=data["hot"],
+            duration=obs_data["duration"],
+            protocol_type=obs_data["protocol_type"],
+            service=obs_data["service"],
+            flag=obs_data["flag"],
+            src_bytes=obs_data["src_bytes"],
+            dst_bytes=obs_data["dst_bytes"],
+            wrong_fragment=obs_data["wrong_fragment"],
+            urgent=obs_data["urgent"],
+            num_failed_logins=obs_data["num_failed_logins"],
+            hot=obs_data["hot"],
 
-            window_avg_src_bytes=data["window_avg_src_bytes"],
-            window_avg_duration=data["window_avg_duration"],
-            window_same_src_count=data["window_same_src_count"],
-            window_attack_count=data["window_attack_count"],
-
+            window_avg_src_bytes=obs_data["window_avg_src_bytes"],
+            window_avg_duration=obs_data["window_avg_duration"],
+            window_same_src_count=obs_data["window_same_src_count"],
+            window_attack_count=obs_data["window_attack_count"],
             
+            # These are now at the TOP level of the server response
             done=data["done"],
             reward=data.get("reward"),
-            step=data["step"]
+            step=obs_data["step"] # Or data["info"]["step"]
         )
