@@ -1,3 +1,5 @@
+from urllib import request
+
 from fastapi import FastAPI
 from server.environment import NetworkEnvironment
 from models import NetworkAction
@@ -21,16 +23,25 @@ env = NetworkEnvironment()
 
 
 @app.post("/reset")
-def reset(request: ResetRequest):
-    env.task_name = request.task_name
-    obs = env.reset()
-    return obs.dict()
-
+    def reset(request: ResetRequest):
+        env.task_name = request.task_name
+        obs = env.reset()
+        return {
+        "observation": obs.__dict__,
+        "reward": None,
+        "done": False,
+        "info": {}
+    }
 
 @app.post("/step")
-def step(action: ActionRequest):
-    obs = env.step(NetworkAction(action_id=action.action_id))
-    return obs.dict()
+    def step(action: ActionRequest):
+        obs = env.step(NetworkAction(action_id=action.action_id))
+        return {
+        "observation": obs.__dict__,
+        "reward": obs.reward,
+        "done": obs.done,
+        "info": {}
+    }
 
 
 @app.get("/state")
