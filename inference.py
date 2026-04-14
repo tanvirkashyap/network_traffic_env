@@ -10,12 +10,11 @@ from tasks.task2_subtle import grader as grader2
 from tasks.task3_mixed import grader as grader3
 
 
-LLM_API_URL = "https://router.huggingface.co/v1/"
-MODEL_NAME = "meta-llama/Llama-3.2-1B-Instruct"
-HF_TOKEN = os.getenv("HF_TOKEN")
+LLM_API_URL = os.getenv("API_BASE_URL")
+MODEL_NAME = "meta-llama/Llama-3.3-70B-Instruct"
 ENV_URL = os.getenv("ENV_URL", "https://tanananana-network-traffic-env.hf.space")
 
-openai_client = OpenAI(base_url=LLM_API_URL, api_key=HF_TOKEN)
+openai_client = OpenAI(base_url=LLM_API_URL, api_key=os.getenv("API_KEY"))
 env = NetworkEnvClient(base_url=ENV_URL)
 
 TASK_GRADERS = {
@@ -68,7 +67,7 @@ Respond with ONLY 0, 1, or 2."""
             temperature=0
         )
         content = response.choices[0].message.content.strip()
-        print(f"DEBUG model output: '{content}'")
+        #print(f"DEBUG model output: '{content}'"), checking if the parsing is working correctly
         
         # check last character first
         if content and content[-1] in ["0", "1", "2"]:
